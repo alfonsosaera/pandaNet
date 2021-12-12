@@ -1,0 +1,1 @@
+from .resizing import Resizing

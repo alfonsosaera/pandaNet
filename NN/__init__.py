@@ -1,0 +1,1 @@
+from .vggLike import NeuralNetwork
