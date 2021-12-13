@@ -43,7 +43,7 @@ test_size, random_state = 0.2, 42
 batch_size, epochs, verbose = 64, 100, 1
 lr, momentum, nesterov = 0.001 , 0.9, True
 decay = lr / epochs
-ESP = max(, epochs/10) # EARLY_STOPPING_PATIENCE
+ESP = max(5, epochs/10) # EARLY_STOPPING_PATIENCE
 
 # ##############################################################################
 #  O u t p u t   c o n f i g
