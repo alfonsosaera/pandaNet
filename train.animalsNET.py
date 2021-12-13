@@ -31,26 +31,31 @@ session = InteractiveSession(config=config)
 # ##############################################################################
 #  V a r i a b l e s
 # ##############################################################################
-tf.random.set_seed(42)
 width = 100
 height = width
 depth = 3
 verb_prep = 1000
 myPath = 'datasets/animals'
 labelNames = ['cat', 'dog', 'panda']
+opt='SGD'
 test_size, random_state = 0.2, 42
-output='output/ADAM_ES_val.acc.ESP10/'
-os.makedirs(output, exist_ok=True)
-visualizationFile = output + 'model.visualization.png'
-plotFile = output + 'plot.png'
 batch_size, epochs, verbose = 64, 40, 1
 lr, momentum, nesterov = 0.01 , 0.9, True
 decay = lr / epochs
-ESP = 10 # EARLY_STOPPING_PATIENCE
+ESP = 5 # EARLY_STOPPING_PATIENCE
+
+# ##############################################################################
+#  O u t p u t   c o n f i g
+# ##############################################################################
+output='output/{}_w.{}_h.{}_ES.{}/'.format( opt, width, height, ESP )
+os.makedirs(output, exist_ok=True)
+visualizationFile = output + 'model.visualization.png'
+plotFile = output + 'plot.png'
 
 # ##############################################################################
 #  P r o c e s s i n g
 # ##############################################################################
+tf.random.set_seed(random_state)
 # get images
 myImages = list(paths.list_images(myPath))
 # preprocessor
@@ -70,8 +75,8 @@ y_train = lb.fit_transform(y_train)
 y_test = lb.transform(y_test)
 # initialize the optimizer and model
 print("[INFO] compiling model...")
-# opt = SGD(lr=lr, decay=decay, momentum=momentum, nesterov=nesterov)
-opt = Adam(lr=lr)
+opt = SGD(lr=lr, decay=decay, momentum=momentum, nesterov=nesterov)
+# opt = Adam(lr=lr)
 model = NeuralNetwork.build(width=width, height=height, depth=depth, classes=len(labelNames))
 # save model visualization
 plot_model(model, to_file=visualizationFile, show_shapes=True)
@@ -79,7 +84,7 @@ plot_model(model, to_file=visualizationFile, show_shapes=True)
 model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 # initialize an early stopping callback
 es = EarlyStopping(
-	monitor='val_accuracy', # "val_loss",
+	monitor="val_loss",
 	patience=ESP,
 	restore_best_weights=True)
 # train the network
@@ -95,9 +100,9 @@ print(classification_report(y_test.argmax(axis=1),
 plt.style.use("ggplot")
 plt.figure()
 plt.plot(np.arange(0, len(H.history['loss']) ), H.history["loss"], label="train_loss")
-plt.plot(np.arange(0, len(H.history['loss']) ), H.history["val_loss"], label="val_loss")
-plt.plot(np.arange(0, len(H.history['loss']) ), H.history["accuracy"], label="train_acc")
-plt.plot(np.arange(0, len(H.history['loss']) ), H.history["val_accuracy"], label="val_acc")
+plt.plot(np.arange(0, len(H.history["val_loss"]) ), H.history["val_loss"], label="val_loss")
+plt.plot(np.arange(0, len(H.history["accuracy"]) ), H.history["accuracy"], label="train_acc")
+plt.plot(np.arange(0, len(H.history["val_accuracy"]) ), H.history["val_accuracy"], label="val_acc")
 plt.title("Training Loss and Accuracy")
 plt.xlabel("Epoch #")
 plt.ylabel("Loss/Accuracy")
