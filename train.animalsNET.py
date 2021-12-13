@@ -40,15 +40,15 @@ myPath = 'datasets/animals'
 labelNames = ['cat', 'dog', 'panda']
 opt='SGD'
 test_size, random_state = 0.2, 42
-batch_size, epochs, verbose = 64, 40, 1
-lr, momentum, nesterov = 0.01 , 0.9, True
+batch_size, epochs, verbose = 64, 100, 1
+lr, momentum, nesterov = 0.001 , 0.9, True
 decay = lr / epochs
-ESP = 5 # EARLY_STOPPING_PATIENCE
+ESP = max(, epochs/10) # EARLY_STOPPING_PATIENCE
 
 # ##############################################################################
 #  O u t p u t   c o n f i g
 # ##############################################################################
-output='output/{}_w.{}_h.{}_ES.{}/'.format( opt, width, height, ESP )
+output='output/{}_w.{}_h.{}_ES.{}_epochs.{}_lr.{}/'.format( opt, width, height, ESP, epochs, lr )
 os.makedirs(output, exist_ok=True)
 visualizationFile = output + 'model.visualization.png'
 plotFile = output + 'plot.png'
